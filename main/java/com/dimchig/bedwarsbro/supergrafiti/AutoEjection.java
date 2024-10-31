@@ -1,6 +1,8 @@
 package com.dimchig.bedwarsbro.supergrafiti;
+
 import com.dimchig.bedwarsbro.Main;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
@@ -13,6 +15,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class AutoEjection {
     private static final Minecraft mc = Minecraft.getMinecraft();
     public static boolean isActive = false;
@@ -20,6 +24,8 @@ public class AutoEjection {
     private int tickDelay = 0;
     private boolean isTransferring = false;
     private boolean hasOpenedInventory = false;
+    
+    private EntityEnderPearl trackedEnderPearl = null;
 
     public void updateBooleans() {
         isActive = Main.getConfigBool(Main.CONFIG_MSG.AUTO_EJECTION);
@@ -29,11 +35,15 @@ public class AutoEjection {
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (mc.thePlayer == null || !isActive) return;
         EntityPlayer player = mc.thePlayer;
-
+        
         if (player.posY > 20) {
             hasOpenedInventory = false;
         }
-
+        
+        if (isTrackingOrFoundEnderPearl(player)) {
+            return; 
+        }
+        
         if (isFallingIntoVoid(player)) {
             if (!hasOpenedInventory) {
                 openInventoryPacket();
@@ -129,5 +139,26 @@ public class AutoEjection {
         Item item = itemStack.getItem();
         return item == Item.getItemById(265) || item == Item.getItemById(266) ||
                 item == Item.getItemById(264) || item == Item.getItemById(388);
+    }
+    
+    private boolean isTrackingOrFoundEnderPearl(EntityPlayer player) {
+        World world = player.worldObj;
+        
+        if (trackedEnderPearl != null) {
+            if (!trackedEnderPearl.isDead) {
+                return true;
+            } else {
+                trackedEnderPearl = null;
+            }
+        }
+        
+        List<EntityEnderPearl> nearbyEnderPearls = world.getEntitiesWithinAABB(EntityEnderPearl.class, player.getEntityBoundingBox().expand(4, 4, 4));
+        
+        if (!nearbyEnderPearls.isEmpty()) {
+            trackedEnderPearl = nearbyEnderPearls.get(0);
+            return true; 
+        }
+
+        return false; 
     }
 }
