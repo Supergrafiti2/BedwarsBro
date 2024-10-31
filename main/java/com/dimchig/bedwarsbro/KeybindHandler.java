@@ -85,16 +85,16 @@ public class KeybindHandler {
     KeyBinding keyFreezeCluth;
     KeyBinding keyShowLastLightning;
     KeyBinding keySpawnFakeFireball;
-    
-    
-    
-    //built-in
+
+
+
+	//built-in
     KeyBinding keyMCAttack;
     KeyBinding keyMCUseItem;
     KeyBinding keyTab;
-    
+
     public static String filename = "BedwarsBro_Keybindings_" + Main.VERSION + ".txt";
-    
+
     public KeybindHandler(Main asInstance) {
     	mc = Minecraft.getMinecraft();
     	//setting keys
@@ -132,6 +132,7 @@ public class KeybindHandler {
     		int key13 = Integer.parseInt(keys[12]);
     		int key14 = Integer.parseInt(keys[13]);
     		int key15 = Integer.parseInt(keys[14]);
+			int key16 = Integer.parseInt(keys[15]);
 
     		//System.out.println("READING KEYS = " + Arrays.toString(keys));
     		
