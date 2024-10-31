@@ -132,7 +132,6 @@ public class KeybindHandler {
     		int key13 = Integer.parseInt(keys[12]);
     		int key14 = Integer.parseInt(keys[13]);
     		int key15 = Integer.parseInt(keys[14]);
-			int key16 = Integer.parseInt(keys[15]);
 
     		//System.out.println("READING KEYS = " + Arrays.toString(keys));
     		
