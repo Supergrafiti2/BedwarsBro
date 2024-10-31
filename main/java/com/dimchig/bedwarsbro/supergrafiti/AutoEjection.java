@@ -1,13 +1,13 @@
 package com.dimchig.bedwarsbro.supergrafiti;
-
 import com.dimchig.bedwarsbro.Main;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C0DPacketCloseWindow;
 import net.minecraft.network.play.client.C0EPacketClickWindow;
+import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -19,7 +19,7 @@ public class AutoEjection {
     private boolean hasDroppedAllItems = false;
     private int tickDelay = 0;
     private boolean isTransferring = false;
-    private boolean isInventoryOpen = false;
+    private boolean hasOpenedInventory = false;
 
     public void updateBooleans() {
         isActive = Main.getConfigBool(Main.CONFIG_MSG.AUTO_EJECTION);
@@ -31,50 +31,47 @@ public class AutoEjection {
         EntityPlayer player = mc.thePlayer;
 
         if (player.posY > 20) {
-            isInventoryOpen = false;
+            hasOpenedInventory = false;
         }
 
         if (isFallingIntoVoid(player)) {
-            if (!isInventoryOpen) {
-                mc.displayGuiScreen(new GuiInventory(player));
-                isInventoryOpen = true;
+            if (!hasOpenedInventory) {
+                openInventoryPacket();
+                hasOpenedInventory = true;
             }
             ejectItemsFromHotbar(player);
+        } else if (hasOpenedInventory) {
+            closeInventoryPacket();
+            hasOpenedInventory = false;
         }
+    }
+
+    private void openInventoryPacket() {
+        mc.thePlayer.sendQueue.addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT));
+    }
+
+    private void closeInventoryPacket() {
+        mc.thePlayer.sendQueue.addToSendQueue(new C0DPacketCloseWindow());
     }
 
     private boolean isFallingIntoVoid(EntityPlayer player) {
         BlockPos pos = player.getPosition();
-
-        if (pos.getY() >= 20) {
-            return false;
-        }
-
+        if (pos.getY() >= 20 || player.motionY >= -0.7) return false;
         World world = player.worldObj;
-
-        if (player.motionY >= -0.7) {
-            return false;
-        }
-
         for (int y = pos.getY() - 1; y >= 0; y--) {
             BlockPos checkPos = new BlockPos(pos.getX(), y, pos.getZ());
-            if (!world.isAirBlock(checkPos)) {
-                return false;
-            }
+            if (!world.isAirBlock(checkPos)) return false;
         }
         return true;
     }
 
     private void ejectItemsFromHotbar(EntityPlayer player) {
-        if (hasDroppedAllItems) return;
-
-        if (tickDelay > 0) {
+        if (hasDroppedAllItems || tickDelay > 0) {
             tickDelay--;
             return;
         }
 
         boolean hasDropped = false;
-
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = player.inventory.getStackInSlot(i);
             if (itemStack != null && itemStack.stackSize > 0 && isTargetItem(itemStack)) {
@@ -96,9 +93,9 @@ public class AutoEjection {
     private void transferItemsToHotbar(EntityPlayer player) {
         if (isTransferring) return;
 
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+        for (int i = 9; i < player.inventory.getSizeInventory(); i++) {
             ItemStack stackInSlot = player.inventory.getStackInSlot(i);
-            if (stackInSlot != null && isTargetItem(stackInSlot) && i >= 9) {
+            if (stackInSlot != null && isTargetItem(stackInSlot)) {
                 isTransferring = true;
                 Container playerContainer = player.openContainer;
                 int windowId = playerContainer.windowId;
@@ -130,9 +127,7 @@ public class AutoEjection {
 
     private boolean isTargetItem(ItemStack itemStack) {
         Item item = itemStack.getItem();
-        return item == Item.getItemById(265) ||
-                item == Item.getItemById(266) ||
-                item == Item.getItemById(264) ||
-                item == Item.getItemById(388);
+        return item == Item.getItemById(265) || item == Item.getItemById(266) ||
+                item == Item.getItemById(264) || item == Item.getItemById(388);
     }
 }
