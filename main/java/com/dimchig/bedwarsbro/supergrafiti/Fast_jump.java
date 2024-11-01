@@ -19,16 +19,17 @@ public class Fast_jump {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (mc.thePlayer == null || mc.theWorld == null || !isActive) return; // Проверяем наличие игрока и мира
+        if (mc.thePlayer == null || mc.theWorld == null || !isActive) return;
         EntityPlayerSP player = mc.thePlayer;
 
-        // Используем рефлексию для изменения jumpTicks в EntityLivingBase
+        // Используем рефлексию для изменения jumpTicks через обфусцированное имя
         try {
-            Field jumpTicksField = EntityLivingBase.class.getDeclaredField("jumpTicks");
+            // Ищем обфусцированное поле jumpTicks
+            Field jumpTicksField = EntityLivingBase.class.getDeclaredField("field_70773_bE"); // Обфусцированное имя
             jumpTicksField.setAccessible(true); // Делаем поле доступным
             jumpTicksField.setInt(player, 0); // Устанавливаем значение jumpTicks в 0
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace(); // Обработка исключений
+            e.printStackTrace(); // Обрабатываем исключения
         }
     }
 }
