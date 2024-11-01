@@ -19,7 +19,7 @@ public class Fast_jump {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (mc.thePlayer == null || !isActive) return;
+        if (mc.thePlayer == null || mc.theWorld == null || !isActive) return; // Проверяем наличие игрока и мира
         EntityPlayerSP player = mc.thePlayer;
 
         // Используем рефлексию для изменения jumpTicks в EntityLivingBase
