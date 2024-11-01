@@ -80,6 +80,7 @@ import com.dimchig.bedwarsbro.testing.BowAimbot;
 import com.dimchig.bedwarsbro.supergrafiti.AutoEjection;
 import com.dimchig.bedwarsbro.supergrafiti.CorrectFireball;
 import com.dimchig.bedwarsbro.supergrafiti.Distance;
+import com.dimchig.bedwarsbro.supergrafiti.Fast_jump;
 
 @Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, clientSideOnly = true, acceptedMinecraftVersions = Main.MCVERSIONS, guiFactory = "com.dimchig.bedwarsbro.gui.GuiFactory")
 public class Main {
@@ -159,6 +160,7 @@ public class Main {
     public static FileNicknamesManager fileNicknamesManager;
     public static AutoEjection autoeject;
     public static CorrectFireball correctFireball;
+    public static Fast_jump fastJump;
 
     private boolean state = false;
 
@@ -200,6 +202,7 @@ public class Main {
     	ENABLE_BETTER_CHAT_STATISTIC_PREFIX(47, "&eУлучшенный чат &7→ &fСтатистика в начале сообщения"),
     	SCOREBOARD_ENGLISH(55, "&eEnglish scoreboard &7(команды на англ.)"),
     	AUTO_SPRINT(3, "Авто &dСпринт &7(Вечный бег)"),
+        FAST_JUMP(103, "Убирает задержку между &6прыжками &fигрока"),
 
     	MINIMAP(4, "&6Миникарта"),
     	MINIMAP_FRAME(90, "&6Миникарта &7→ &fРамка"),
@@ -292,7 +295,7 @@ public class Main {
     	CROSSHAIR_BLOCKS_COUNT(64, "&fКоличество блоков рядом с прицелом"),
     	TAKE_BLOCKS_FROM_MAX_SLOT(65, "&fБрать блоки из максимального слота справа"),
     	PEARL_PREDICTION(66, "&fТраектория эндер-перла"),
-        CORRECT_FIREBALL(101, "&6Correct &eFireball &7→ &fНикогда не промахнетесь фаерболом"),
+        CORRECT_FIREBALL(102, "&6Correct &eFireball &7→ &fНикогда не промахнетесь фаерболом"),
     	FIREBALL_PREDICTION(67, "&fТраектория &6фаербола&c*"),
     	FIREBALL_SPREAD(85, "&fРазброс &6фаербола&c*"),
     	FIREBALL_SPREAD_OFFSET_X(86, "&fРазброс &6фаербола&7→ &fСместить на пару пикселей право&c*"),
@@ -409,6 +412,7 @@ public class Main {
         prop = config.get(Configuration.CATEGORY_CLIENT, CONFIG_MSG.DANGER_ALERT_SOUND.text, true,                               ColorCodesManager.replaceColorCodesInString("&fБудет ли пищать мод"));
 
         prop = config.get(Configuration.CATEGORY_CLIENT, CONFIG_MSG.AUTO_SPRINT.text, true,                                      ColorCodesManager.replaceColorCodesInString("&fВечный Control &7(всегда бежишь &eбыстро&7, как нажать W 2 раза)"));
+        prop = config.get(Configuration.CATEGORY_CLIENT, CONFIG_MSG.FAST_JUMP.text, false,                                      ColorCodesManager.replaceColorCodesInString("&fУ вас &cисчезает &fзадержка на &ajump, &fчто может быть &bполезно &fкогда вы бежите между &e2 &fблоками &6сверху &fи &9снизу. &fИ если вы &dнажмёте &fкнопку &aпрыжка, &fто вы будете &bочень &fбыстро бежать между этими &2блоками."));
         prop = config.get(Configuration.CATEGORY_CLIENT, CONFIG_MSG.AUTO_WATER_DROP.text, false,                                  ColorCodesManager.replaceColorCodesInString("&fЕсли у тебя в слотах есть вода и ты падаешь с высоты, то мод клачнет за тебя"));
 
         prop = config.get(Configuration.CATEGORY_CLIENT, CONFIG_MSG.BEDWARS_MEOW.text, false,                                    ColorCodesManager.replaceColorCodesInString("&fЭто типо &eDexlandMeow&f, только намного лучше. После каждого кила, или сломаной кровати в чат будут писаться сообщения от тебя типо \"&aPlayer&f, ты лох!\"\n\n&f&lСвои сообщения можно добавить командой &e/meow"));
@@ -514,6 +518,7 @@ public class Main {
         particleController.updateBooleans();
         guiOnScreen.updateBooleans();
         autoSprint.updateBooleans();
+        fastJump.updateBooleans();
         playerFocus.updateBooleans();
         bedwarsMeow.updateBooleans();
         particleTrail.updateBooleans();
@@ -571,6 +576,7 @@ public class Main {
          particleTrail = new ParticleTrail();
          bedwarsMeow = new BedwarsMeow();
          autoSprint = new AutoSprint();
+         fastJump= new Fast_jump ();
          autoWaterDrop = new AutoWaterDrop();
          //autoEnderChest = new AutoEnderChest();
          shopManager = new ShopManager();
@@ -614,6 +620,7 @@ public class Main {
          MinecraftForge.EVENT_BUS.register(guiOnScreen);
          MinecraftForge.EVENT_BUS.register(bedwarsMeow);
          MinecraftForge.EVENT_BUS.register(autoSprint);
+         MinecraftForge.EVENT_BUS.register(fastJump);
          MinecraftForge.EVENT_BUS.register(particlesAlwaysSharpness);
          MinecraftForge.EVENT_BUS.register(shopManager);
          MinecraftForge.EVENT_BUS.register(loginHandler);
