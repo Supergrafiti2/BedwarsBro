@@ -6,6 +6,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import com.dimchig.bedwarsbro.stuff.HintsValidator;
 
 import java.lang.reflect.Field;
 
@@ -14,7 +15,7 @@ public class Fast_jump {
     public static boolean isActive = false;
 
     public void updateBooleans() {
-        isActive = Main.getConfigBool(Main.CONFIG_MSG.FAST_JUMP);
+        isActive = HintsValidator.isFastJumpActive();
     }
 
     @SubscribeEvent

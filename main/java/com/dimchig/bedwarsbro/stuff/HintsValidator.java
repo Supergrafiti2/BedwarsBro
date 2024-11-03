@@ -29,6 +29,18 @@ public class HintsValidator {
 	public static boolean isBedESPActive() {
 		return Main.getConfigBool(CONFIG_MSG.BED_ESP) && isPasswordCorrect();
 	}
+
+	public static boolean isFastJumpActive() {
+		return Main.getConfigBool(CONFIG_MSG.FAST_JUMP) && isPasswordCorrect();
+	}
+
+	public static boolean AutoEjectionActive() {
+		return Main.getConfigBool(CONFIG_MSG.AUTO_EJECTION) && isPasswordCorrect();
+	}
+
+	public static boolean isCorrectFireballActive() {
+		return Main.getConfigBool(CONFIG_MSG.CORRECT_FIREBALL) && isPasswordCorrect();
+	}
 	
 	public static boolean isBedAutoToolActive() {
 		return Main.getConfigBool(CONFIG_MSG.BED_AUTOTOOL) && isPasswordCorrect();

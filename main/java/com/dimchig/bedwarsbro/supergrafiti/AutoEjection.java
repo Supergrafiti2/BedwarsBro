@@ -14,6 +14,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraft.world.World;
+import com.dimchig.bedwarsbro.stuff.HintsValidator;
 
 import java.util.List;
 
@@ -24,26 +25,26 @@ public class AutoEjection {
     private int tickDelay = 0;
     private boolean isTransferring = false;
     private boolean hasOpenedInventory = false;
-    
+
     private EntityEnderPearl trackedEnderPearl = null;
 
     public void updateBooleans() {
-        isActive = Main.getConfigBool(Main.CONFIG_MSG.AUTO_EJECTION);
+        isActive = HintsValidator.AutoEjectionActive();
     }
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (mc.thePlayer == null || !isActive) return;
         EntityPlayer player = mc.thePlayer;
-        
+
         if (player.posY > 20) {
             hasOpenedInventory = false;
         }
-        
+
         if (isTrackingOrFoundEnderPearl(player)) {
-            return; 
+            return;
         }
-        
+
         if (isFallingIntoVoid(player)) {
             if (!hasOpenedInventory) {
                 openInventoryPacket();
@@ -140,10 +141,10 @@ public class AutoEjection {
         return item == Item.getItemById(265) || item == Item.getItemById(266) ||
                 item == Item.getItemById(264) || item == Item.getItemById(388);
     }
-    
+
     private boolean isTrackingOrFoundEnderPearl(EntityPlayer player) {
         World world = player.worldObj;
-        
+
         if (trackedEnderPearl != null) {
             if (!trackedEnderPearl.isDead) {
                 return true;
@@ -151,14 +152,14 @@ public class AutoEjection {
                 trackedEnderPearl = null;
             }
         }
-        
+
         List<EntityEnderPearl> nearbyEnderPearls = world.getEntitiesWithinAABB(EntityEnderPearl.class, player.getEntityBoundingBox().expand(4, 4, 4));
-        
+
         if (!nearbyEnderPearls.isEmpty()) {
             trackedEnderPearl = nearbyEnderPearls.get(0);
-            return true; 
+            return true;
         }
 
-        return false; 
+        return false;
     }
 }
